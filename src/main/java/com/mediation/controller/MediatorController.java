@@ -35,7 +35,7 @@ public class MediatorController {
                 .name(dto.getName())
                 .idCard(dto.getIdCard())
                 .phone(dto.getPhone())
-                .organization(dto.getOrganization())
+                .organizationId(dto.getOrganizationId())
                 .speciality(dto.getSpeciality())
                 .level(dto.getLevel() != null ? MediatorLevel.valueOf(dto.getLevel()) : MediatorLevel.初级)
                 .build();
@@ -49,13 +49,16 @@ public class MediatorController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) String keyword) {
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long organizationId) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
         Page<Mediator> result;
 
-        if (status != null && keyword != null) {
+        if (organizationId != null) {
+            result = mediatorRepository.findByOrganizationId(organizationId, pageable);
+        } else if (status != null && keyword != null) {
             MediatorStatus ms = MediatorStatus.valueOf(status);
             result = mediatorRepository.searchByStatusAndKeyword(ms, keyword, pageable);
         } else if (status != null) {

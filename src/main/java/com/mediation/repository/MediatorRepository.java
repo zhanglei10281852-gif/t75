@@ -16,11 +16,17 @@ public interface MediatorRepository extends JpaRepository<Mediator, Long> {
 
     long countByStatus(MediatorStatus status);
 
-    @Query("SELECT m FROM Mediator m WHERE m.name LIKE %:keyword% OR m.organization LIKE %:keyword%")
+    @Query("SELECT m FROM Mediator m WHERE m.name LIKE %:keyword%")
     Page<Mediator> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
-    @Query("SELECT m FROM Mediator m WHERE m.status = :status AND (m.name LIKE %:keyword% OR m.organization LIKE %:keyword%)")
+    @Query("SELECT m FROM Mediator m WHERE m.status = :status AND m.name LIKE %:keyword%")
     Page<Mediator> searchByStatusAndKeyword(@Param("status") MediatorStatus status, @Param("keyword") String keyword, Pageable pageable);
 
     boolean existsByIdCard(String idCard);
+
+    Page<Mediator> findByOrganizationId(Long organizationId, Pageable pageable);
+
+    long countByOrganizationId(Long organizationId);
+
+    long countByOrganizationIdAndStatus(Long organizationId, MediatorStatus status);
 }

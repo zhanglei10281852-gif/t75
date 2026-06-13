@@ -26,8 +26,8 @@ public class Mediator {
     @Column(nullable = false)
     private String phone;
 
-    @Column(nullable = false)
-    private String organization;
+    @Column(name = "organization_id")
+    private Long organizationId;
 
     private String speciality;
 

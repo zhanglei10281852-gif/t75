@@ -17,8 +17,7 @@ public class MediatorDTO {
     @NotBlank(message = "电话不能为空")
     private String phone;
 
-    @NotBlank(message = "调解组织不能为空")
-    private String organization;
+    private Long organizationId;
 
     private String speciality;
 
