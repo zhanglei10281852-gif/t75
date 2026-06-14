@@ -6,6 +6,7 @@ import com.mediation.entity.Certificate;
 import com.mediation.entity.Certificate.CertStatus;
 import com.mediation.entity.TrainingAssessment;
 import com.mediation.repository.AnnualHoursRepository;
+import com.mediation.repository.BadRecordRepository;
 import com.mediation.repository.CertificateRepository;
 import com.mediation.repository.MediatorRepository;
 import com.mediation.repository.TrainingAssessmentRepository;
@@ -35,6 +36,7 @@ public class CertificateController {
     private final MediatorRepository mediatorRepository;
     private final AnnualHoursRepository annualHoursRepository;
     private final TrainingAssessmentRepository assessmentRepository;
+    private final BadRecordRepository badRecordRepository;
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CertificateDTO dto) {
@@ -111,6 +113,12 @@ public class CertificateController {
         if (!hasPassedThisYear) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "本年度无通过考核记录，无法续证"));
+        }
+
+        long activeBadRecords = badRecordRepository.countActiveByMediatorId(oldCert.getMediatorId());
+        if (activeBadRecords > 0) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "存在未撤销的不良记录（" + activeBadRecords + "条），无法续证"));
         }
 
         if (oldCert.getStatus() == CertStatus.已过期 || oldCert.getStatus() == CertStatus.已续证) {
